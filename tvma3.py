@@ -29,7 +29,7 @@ class Data:
 
 ## collect the data
 #rootdir = "/Users/dy/git/data/jsonload/select/"
-rootdir = "/Users/dy/git/data/jsonload/select/"
+rootdir = "/Users/dy/git/data/jsonload/select2/"
 data = Data()
 fileNamelist = data.findFile(rootdir)
 for i in range(1):
@@ -67,16 +67,21 @@ markers = np.zeros([dataAmount,1])
 nGridx = 25
 nGridy = 10
 N = sp2.shape[0]
-n1db2 = 7
-n1 = 2*n1db2-1 #1*nGridx
+n0 = 5
+nVel = n0-1
+nAcc = nVel-1
+n1 = n0 + nVel# + nAcc#1*nGridx
 n2 = 0 #1*nGridx
-n3 = 37
+n3 = 41
 n=n1+n2+n3
-param001 = 0.000000000001 #Q_kkn1[j]
+#param001 = 0.000000000001 #Q_kkn1[j]
+param001 = 1.0 #Q_kkn1[j]
 param002 = 0.001  #S_k
 param003 = 100 #R_k
 #param004 = 0.0001 #Phi_k[n1db2 + i]
-param004 = 0.00000000000000001  #Phi_k[n1db2 + i]
+param004 = 0.05  #0.00000000000000001  #Phi_k[n1db2 + i]
+param005 = param004
+param006 = -47.5
 
 theta_kk = np.zeros([n1, 1])
 theta_kkn1 = np.zeros([n1, 1])
@@ -105,10 +110,12 @@ idxLastUpdate = -1
 
 for idx in range(n, int(N-n2), 1):
 
-    for i in range(0, int(n1db2)): Phi_k[i] = sp2[idx - n2 - i - 1]
-    #for i in range(0, int(n1db2)-1): Phi_k[n1db2+i] = -1*np.exp(0.01*(Phi_k[0]-Phi_k[i+1])/(i+1))
-    #for i in range(0, int(n1db2) - 1): Phi_k[n1db2 + i] = -1 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1))
-    for i in range(0, int(n1db2) - 1): Phi_k[n1db2 + i] = -1 * np.exp(param004 * (Phi_k[i] - Phi_k[i + 1]))
+    for i in range(0, int(n0)): Phi_k[i] = sp2[idx - n2 - i - 1]
+    for i in range(0, int(nVel)): Phi_k[n0 + i] = param006 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1))
+    #for i in range(0, int(nVel)): Phi_k[n0 + i] = param006 * np.exp(param004 * (Phi_k[i] - Phi_k[i + 1]))
+    #for i in range(0, int(nVel)): Phi_k[n0 + i] = -1 * param004 * (Phi_k[i] - Phi_k[i + 1])
+    #for i in range(0, int(nAcc)): Phi_k[n0 + nVel + 1] = -1*np.exp(param005 * (Phi_k[i] - Phi_k[i+1]))
+    #for i in range(0, int(nAcc)): Phi_k[n0 + nVel + 1] = -0.5 * param005 * (Phi_k[i] - Phi_k[i + 1])
     Phi_k_t = np.transpose(Phi_k)
     y_k[0] = hr[idx]
 
