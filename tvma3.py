@@ -29,7 +29,7 @@ class Data:
 
 ## collect the data
 #rootdir = "/Users/dy/git/data/jsonload/select/"
-rootdir = "/Users/dy/git/data/jsonload/select2/"
+rootdir = "/Users/dy/git/data/jsonload/select/"
 data = Data()
 fileNamelist = data.findFile(rootdir)
 for i in range(1):
@@ -66,25 +66,25 @@ markers = np.zeros([dataAmount,1])
 
 nGridx = 25
 nGridy = 10
-#n = nGridx
-#n = 2*nGridx
-#n = 4*nGridx
-#n = 20*nGridx
 N = sp2.shape[0]
-n1db2 = 5
-n1 = 2*n1db2 #1*nGridx
-n2 = 0#1*nGridx
-n3 = 20
+n1db2 = 7
+n1 = 2*n1db2-1 #1*nGridx
+n2 = 0 #1*nGridx
+n3 = 37
 n=n1+n2+n3
-#N = (sp2.shape[0]-(sp2.shape[0])%(n))/n
+param001 = 0.000000000001 #Q_kkn1[j]
+param002 = 0.001  #S_k
+param003 = 100 #R_k
+#param004 = 0.0001 #Phi_k[n1db2 + i]
+param004 = 0.00000000000000001  #Phi_k[n1db2 + i]
 
 theta_kk = np.zeros([n1, 1])
 theta_kkn1 = np.zeros([n1, 1])
 Phi_k = np.zeros([n1,1])
 Q_kkn1 = np.identity(n1)
-for j in range(0, int(n1)): Q_kkn1[j] = 0.000000000001
-S_k = np.identity(1)*0.001
-R_k = np.identity(int(n1))*100
+for j in range(0, int(n1)): Q_kkn1[j] = param001
+S_k = np.identity(1)*param002
+R_k = np.identity(int(n1))*param003
 K_k = np.zeros([1,1])
 r_k = np.zeros([1,1])
 y_k = np.zeros([1,1])
@@ -101,12 +101,14 @@ for idx in range(0, N, 1):
     #print(markers[idx], "\n")
 
 sumErrTP2=0
-idxLastUpdate = -1;
+idxLastUpdate = -1
 
 for idx in range(n, int(N-n2), 1):
 
     for i in range(0, int(n1db2)): Phi_k[i] = sp2[idx - n2 - i - 1]
-    for i in range(0, int(n1db2)): Phi_k[n1db2+i] = -np.exp(1*(Phi_k[0]-Phi_k[i]))
+    #for i in range(0, int(n1db2)-1): Phi_k[n1db2+i] = -1*np.exp(0.01*(Phi_k[0]-Phi_k[i+1])/(i+1))
+    #for i in range(0, int(n1db2) - 1): Phi_k[n1db2 + i] = -1 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1))
+    for i in range(0, int(n1db2) - 1): Phi_k[n1db2 + i] = -1 * np.exp(param004 * (Phi_k[i] - Phi_k[i + 1]))
     Phi_k_t = np.transpose(Phi_k)
     y_k[0] = hr[idx]
 
@@ -142,14 +144,6 @@ for idx in range(n, int(N-n2), 1):
 rmsd = math.sqrt(sumErrTP2/N)
 #print("rmsd = \t", rmsd, "\n")
 
-#fig, ax1 = plt.subplots()
-#ax1.plot(range(hr[startIndex:endIndex,:].shape[0]),hr_ref[startIndex:endIndex,:],color='red',label='reference')
-#ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-#ax2.plot(range(hr_est[startIndex:endIndex,:].shape[0]),hr_est[startIndex:endIndex,:],color='blue',label='estimate')
-#ax1.set_ylabel('heart rate')
-#ax1.set_xlabel('time')
-#ax1.set_title('one heart rate measurement every 25 seconds')
-
 fig = plt.figure()
 ax = fig.add_subplot(2, 1, 1)
 
@@ -165,19 +159,16 @@ ax.legend(['reference', 'estimation'])
 ax2 = fig.add_subplot(2,1,2)
 ax2.plot(range(sp2[startIndex:endIndex].shape[0]),sp2[startIndex:endIndex],'r')
 
-#plt.xlim([0, 4100])
-#plt.ylim([-20, 180])
-
 x_major_ticks = np.arange(0, 4100, 200)
 x_minor_ticks = np.arange(0, 4100, 25)
-y_major_ticks = np.arange(-0.5, 200, 20)
-y_minor_ticks = np.arange(-0.5, 200, 5)
+y_major_ticks = np.arange(-0.5, 180, 20)
+y_minor_ticks = np.arange(-0.5, 180, 5)
 y2_major_ticks = np.arange(-0.5,3.0,0.5)
 
 ax.set_xlim([0, 4100])
 ax.set_ylim([-0.5, 180])
 ax2.set_xlim([0, 4100])
-ax2.set_ylim([-0.5, 3.0])
+ax2.set_ylim([-0.5, 3.5])
 
 ax.set_xticks(x_major_ticks)
 ax.set_xticks(x_minor_ticks, minor=True)
@@ -185,12 +176,8 @@ ax.set_yticks(y_major_ticks)
 ax.set_yticks(y_minor_ticks, minor=True)
 ax2.set_yticks(y2_major_ticks)
 
-# And a corresponding grid
 ax.grid(True, which='both')
 
-# Or if you want different settings for the grids:
-#ax.grid(which='minor', alpha=0.2)
-#ax.grid(which='major', alpha=0.5)
 ax.grid(b=True, which='major', linestyle='-', alpha=0.5)
 ax.grid(b=True, which='minor', linestyle='-', alpha=0.2)
 ax.grid()
