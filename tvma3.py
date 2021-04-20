@@ -81,7 +81,8 @@ param003 = 100 #R_k
 #param004 = 0.0001 #Phi_k[n1db2 + i]
 param004 = 0.05  #0.00000000000000001  #Phi_k[n1db2 + i]
 param005 = param004
-param006 = -47.5
+param006 = 0.0  #50.0
+param007 = 20.0
 
 theta_kk = np.zeros([n1, 1])
 theta_kkn1 = np.zeros([n1, 1])
@@ -111,7 +112,8 @@ idxLastUpdate = -1
 for idx in range(n, int(N-n2), 1):
 
     for i in range(0, int(n0)): Phi_k[i] = sp2[idx - n2 - i - 1]
-    for i in range(0, int(nVel)): Phi_k[n0 + i] = param006 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1))
+    for i in range(0, int(nVel)): Phi_k[n0 + i] = (-param006 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1)))
+    #for i in range(0, int(nVel)): Phi_k[n0 + i] = param007 * (1 - param006 * np.exp(param004 * (Phi_k[0] - Phi_k[i + 1]) / (i + 1)))
     #for i in range(0, int(nVel)): Phi_k[n0 + i] = param006 * np.exp(param004 * (Phi_k[i] - Phi_k[i + 1]))
     #for i in range(0, int(nVel)): Phi_k[n0 + i] = -1 * param004 * (Phi_k[i] - Phi_k[i + 1])
     #for i in range(0, int(nAcc)): Phi_k[n0 + nVel + 1] = -1*np.exp(param005 * (Phi_k[i] - Phi_k[i+1]))
