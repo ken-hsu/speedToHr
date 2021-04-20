@@ -69,10 +69,10 @@ nGridy = 10
 N = sp2.shape[0]
 n0 = 5
 nVel = n0-1
-nAcc = nVel-1
-n1 = n0 + nVel# + nAcc#1*nGridx
+#nVel = 0
+n1 = n0 + nVel
 n2 = 0 #1*nGridx
-n3 = 41
+n3 = 51
 n=n1+n2+n3
 #param001 = 0.000000000001 #Q_kkn1[j]
 param001 = 1.0 #Q_kkn1[j]
@@ -162,7 +162,8 @@ ax = fig.add_subplot(2, 1, 1)
 #         range(hr_est[startIndex:endIndex,:].shape[0]),hr_est[startIndex:endIndex,:], )
 ax.plot(range(hr[startIndex:endIndex,:].shape[0]),hr_ref[startIndex:endIndex,:])
 ax.plot(range(hr_est[startIndex:endIndex,:].shape[0]),hr_est[startIndex:endIndex,:])
-ax.plot(range(markers[startIndex:endIndex,:].shape[0]),markers[startIndex:endIndex,:], "rx")
+
+ax.plot(range(markers[startIndex:endIndex,:].shape[0]),markers[startIndex:endIndex,:], "mx")
 ax.legend(['reference', 'estimation'])
 
 ax2 = fig.add_subplot(2,1,2)
@@ -192,11 +193,18 @@ ax.grid(b=True, which='minor', linestyle='-', alpha=0.2)
 ax.grid()
 #ax.minorticks_on()
 
+
 title = "1 heart rate measurement every " + str(n) + " seconds"
 ax.title.set_text(title)
 plt.grid()
 
 ax.set_ylabel('heart rate (bpm)')
 ax.set_xlabel('time (sec)')
+
+ax2.set_ylabel('speed')
+ax2.set_xlabel('time (sec)')
+
+parametersStr = r'$c_{4}$='+ str(param004) + ' and '+ r'$c_{6}$=' + str(param006)
+ax.text(500, 6, parametersStr, fontsize=15)
 
 plt.show()
